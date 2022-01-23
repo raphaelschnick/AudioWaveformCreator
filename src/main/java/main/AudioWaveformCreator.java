@@ -22,11 +22,9 @@ public class AudioWaveformCreator {
 
     private AudioInputStream audioInputStream;
     private final Vector<Line2D.Double> lines = new Vector<Line2D.Double>();
-    private double duration, seconds;
-    private final Color imageBackgroundColor = new Color(255, 140, 44);
+    private double duration;
     private final Font font12 = new Font("serif", Font.PLAIN, 12);
     private final Color secondary = new Color(0, 0, 0);
-    private final Color pink = new Color(255, 0, 0);
 
     public File createWaveForm(File file) throws IOException {
         byte[] audioBytes = null;
@@ -45,6 +43,7 @@ public class AudioWaveformCreator {
             audioBytes = new byte[
                     (int) (audioInputStream.getFrameLength()
                             * format.getFrameSize())];
+            audioInputStream.read(audioBytes);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             return null;
@@ -118,23 +117,15 @@ public class AudioWaveformCreator {
 
 
     private void createSampleOnGraphicsContext(int w, int h, int infoPad, Graphics2D g2) {
-        g2.setBackground(imageBackgroundColor);
+        g2.setBackground(secondary);
         g2.clearRect(0, 0, w, h);
-        g2.setColor(imageBackgroundColor);
         g2.fillRect(0, h - infoPad, w, infoPad);
-        g2.setColor(secondary);
         g2.setFont(font12);
 
         if (audioInputStream != null) {
             g2.setColor(secondary);
             for (var i = 1; i < lines.size(); i++) {
                 g2.draw(lines.get(i));
-            }
-            if (seconds != 0) {
-                double loc = seconds / duration * w;
-                g2.setColor(pink);
-                g2.setStroke(new BasicStroke(3));
-                g2.draw(new Line2D.Double(loc, 0, loc, h - infoPad - 2));
             }
         }
     }
